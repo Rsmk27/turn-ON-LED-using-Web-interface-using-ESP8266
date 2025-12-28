@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global LED Control</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: #34495e;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            width: 300px;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        .status {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #7f8c8d;
+            transition: all 0.3s;
+        }
+        .status.on {
+            background-color: #2ecc71;
+            color: white;
+            box-shadow: 0 0 15px #2ecc71;
+        }
+        .status.off {
+            background-color: #e74c3c;
+            color: white;
+            box-shadow: 0 0 15px #e74c3c;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #btn-toggle {
+            background-color: #3498db;
+            color: white;
+        }
+        #btn-toggle:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>LED Controller</h1>
+    <div id="status-display" class="status">Loading...</div>
+    <button id="btn-toggle" onclick="toggleLED()">Current State: ...</button>
+</div>
+
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<!-- Firebase Realtime Database -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+  // TODO: Replace with your project's config object
+  // You can find this in the Firebase Console -> Project Settings -> General -> Your apps
+  const firebaseConfig = {
+  apiKey: "AIzaSyB6VZj37EWuiB6iiwihHQUJwg3ZdnDdgkM",
+  authDomain: "test-esp8266-c6e25.firebaseapp.com",
+  databaseURL: "https://test-esp8266-c6e25-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "test-esp8266-c6e25",
+  storageBucket: "test-esp8266-c6e25.firebasestorage.app",
+  messagingSenderId: "20186082118",
+  appId: "1:20186082118:web:267d049aab8c3d3dff9347"
+};
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.database();
+  const ledRef = db.ref('led_status');
+  const speedRef = db.ref('led_speed'); // Optional: for future use
+
+  const statusDisplay = document.getElementById('status-display');
+  const btnToggle = document.getElementById('btn-toggle');
+  let currentState = false;
+
+  // Listen for changes
+  ledRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    currentState = (data === true); // Ensure boolean
+    updateUI(currentState);
+  });
+
+  function updateUI(isOn) {
+    if (isOn) {
+        statusDisplay.textContent = "LED is ON";
+        statusDisplay.classList.remove('off');
+        statusDisplay.classList.add('on');
+        btnToggle.textContent = "Turn OFF";
+        btnToggle.style.backgroundColor = "#e74c3c";
+    } else {
+        statusDisplay.textContent = "LED is OFF";
+        statusDisplay.classList.remove('on');
+        statusDisplay.classList.add('off');
+        btnToggle.textContent = "Turn ON";
+        btnToggle.style.backgroundColor = "#2ecc71";
+    }
+  }
+
+  function toggleLED() {
+    // Write new state to Firebase
+    ledRef.set(!currentState)
+        .then(() => console.log('Data saved successfully!'))
+        .catch((error) => console.error('Data could not be saved.' + error));
+  }
+</script>
+
+</body>
+</html>
