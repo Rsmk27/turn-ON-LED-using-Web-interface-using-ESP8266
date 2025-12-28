@@ -24,8 +24,8 @@
 #define WIFI_PASSWORD "rsmk2005"
 
 // 2. Firebase Credentials
-#define API_KEY "AIzaSyB6VZj37EWuiB6iiwihHQUJwg3ZdnDdgkM"
-#define DATABASE_URL "test-esp8266-c6e25-default-rtdb.asia-southeast1.firebasedatabase.app"
+#define API_KEY "FIREBASE-API"
+#define DATABASE_URL "DATABASE-URL"
 
 // 3. Hardware Settings
 const int LED_PIN = 5; // Built-in LED is usually D4 (GPIO2)
@@ -116,3 +116,4 @@ void loop() {
   // Keep alive / fallback polling if stream fails? 
   // For basic example, stream is best.
 }
+
